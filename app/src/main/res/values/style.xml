@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="style1" parent="TextAppearance.AppCompat">
+        <item name="fontFamily">@font/josefinsansbold</item>
+    </style>
+
+    <style name="style2" parent="TextAppearance.AppCompat">
+        <item name="fontFamily">@font/josefinsanslight</item>
+    </style>
+</resources>
