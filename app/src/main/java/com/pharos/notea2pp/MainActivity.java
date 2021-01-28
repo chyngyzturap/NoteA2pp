@@ -3,13 +3,14 @@ package com.pharos.notea2pp;
 import android.os.Bundle;
 import android.view.View;
 
-import com.google.android.material.bottomnavigation.BottomNavigationView;
-
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
+
+import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.ArrayList;
 import java.util.Objects;
@@ -26,7 +27,11 @@ public class MainActivity extends AppCompatActivity {
         if (!new Prefs(this).isShown()){
             navController.navigate(R.id.boardFragment);
         }
+    else if (FirebaseAuth.getInstance().getCurrentUser() == null) {
+        navController.navigate(R.id.phoneFragment);
     }
+    }
+
 
     private void initNavController() {
         BottomNavigationView navView = findViewById(R.id.nav_view);

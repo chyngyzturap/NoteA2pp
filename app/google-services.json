@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "428317568718",
+    "project_id": "notea2pp-8f8f1",
+    "storage_bucket": "notea2pp-8f8f1.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:428317568718:android:d84773f193a3f353cc6a9f",
+        "android_client_info": {
+          "package_name": "com.pharos.notea2pp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "428317568718-1pr66qi5l5bahl1tqvalgt0t58c6pefp.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.pharos.notea2pp",
+            "certificate_hash": "139908da181f322d648b0a6cdf7c0417aa46c544"
+          }
+        },
+        {
+          "client_id": "428317568718-dajeklp6svo403daia71drk5tfgmaovp.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDQiMtizVn1SGMuoJgqVT12MrxOmbVrqMA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "428317568718-dajeklp6svo403daia71drk5tfgmaovp.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
