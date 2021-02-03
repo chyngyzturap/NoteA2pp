@@ -7,6 +7,7 @@
     android:orientation="vertical"
     tools:context=".ui.auth.PhoneFragment">
 
+
     <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -17,6 +18,10 @@
         android:layout_height="wrap_content"
         android:id="@+id/addCode"
         android:inputType="number"/>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/timer"/>
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

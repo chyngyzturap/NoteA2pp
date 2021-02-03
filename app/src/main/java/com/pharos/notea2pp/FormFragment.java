@@ -8,11 +8,19 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.pharos.notea2pp.model.Note;
 
 import java.text.DateFormat;
@@ -23,6 +31,7 @@ import java.util.Locale;
 public class FormFragment extends Fragment {
     EditText editText;
     Note note;
+    FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -44,18 +53,53 @@ public class FormFragment extends Fragment {
     private void save() {
         String text = editText.getText().toString().trim();
         String time = getTime();
-        if (note == null){
-            note = new Note (text, time);
-            App.getAppDataBase().noteDao().insert(note);
+        if (note == null) {
+            note = new Note(text, time);
+            saveToFirestore(note);
         } else {
-note.setTitle(text);
-note.setDate(time);
-App.getAppDataBase().noteDao().update(note);
+            note.setTitle(text);
+            editFireStore();
         }
         Bundle bundle = new Bundle();
         bundle.putSerializable("note", note);
         getParentFragmentManager().setFragmentResult("rk_form", bundle);
-        close();
+
+    }
+
+    private void editFireStore() {
+        db.collection("notes").document(note.getId())
+                .set(note)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if (task.isComplete()) {
+                            Log.e("TAGF1", "Updated ID: " + note.getId());
+                            App.getAppDataBase().noteDao().update(note);
+                        } else {
+                            Log.e("TAGF2", "Error with update operation");
+                        }
+                    }
+                });
+    }
+
+    private void saveToFirestore(Note note) {
+        FirebaseFirestore.getInstance().collection("notes")
+                .add(note)
+                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                    @Override
+                    public void onSuccess(DocumentReference documentReference) {
+                        // Adding to DataBased
+                        note.setId(documentReference.getId());
+                        App.getAppDataBase().noteDao().insert(note);
+                        Log.e("TAGF5", "Added ID: " + documentReference.getId());
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.e("TAGF6", "Error for adding operation", e);
+                    }
+                });
     }
 
     private void close() {

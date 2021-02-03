@@ -1,5 +1,6 @@
 package com.pharos.notea2pp.model;
 
+import androidx.annotation.NonNull;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
@@ -7,21 +8,25 @@ import java.io.Serializable;
 
 @Entity
 public class Note implements Serializable {
-    @PrimaryKey(autoGenerate = true)
-    private long id;
+    @PrimaryKey
+    @NonNull
+
+    private String id;
     private String title;
     private String date;
+
+    public Note() {    }
 
     public Note(String title, String date) {
         this.title = title;
         this.date = date;
     }
 
-    public long getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(String id) {
         this.id = id;
     }
 

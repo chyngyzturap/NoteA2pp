@@ -36,16 +36,9 @@ public class BoardFragment extends Fragment {
         viewPager2.setAdapter(adapter);
         new TabLayoutMediator(tabLayout, viewPager2,
                 ((tab, position) -> tab.setText(""))).attach();
-        adapter.setOnItemClickListener(new OnItemClickListener() {
-            @Override
-            public void onClick(int position) {
-                close();
-            }
-
-            @Override
-            public void longClick(int position) {
-
-            }
+        adapter.setBoardFragmentListener(() -> {
+            new Prefs(requireContext()).saveBoardStatus();
+            close();
         });
         view.findViewById(R.id.imgBtn_skip).setOnClickListener(v -> {close();});
     }
@@ -55,6 +48,7 @@ public class BoardFragment extends Fragment {
         prefs.saveBoardStatus();
         NavController navController = Navigation.findNavController(
                 requireActivity(), R.id.nav_host_fragment);
+        navController.navigateUp();
         navController.navigate(R.id.phoneFragment);
     }
 }

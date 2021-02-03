@@ -19,11 +19,9 @@ import java.util.List;
 public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.ViewHolder> {
     private final ArrayList<Note> list;
     private OnItemClickListener onItemClickListener;
-    private Context context;
 
-    public NoteAdapter(Context context) {
+    public NoteAdapter() {
         list = new ArrayList<>();
-this.context = context;
     }
 
     @NonNull
@@ -49,6 +47,11 @@ this.context = context;
         notifyItemChanged(list.indexOf(0));
     }
 
+    public  void removeItem(int position){
+        list.remove(position);
+        notifyItemRemoved(position);
+    }
+
     public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
         this.onItemClickListener = onItemClickListener;
     }
@@ -62,7 +65,6 @@ this.context = context;
         notifyItemRemoved(pos);
     }
     public void setList(List<Note> list){
-        this.list.clear();
         this.list.addAll(list);
         notifyDataSetChanged();
     }
@@ -82,8 +84,10 @@ this.context = context;
             super(itemView);
             txtTitle = itemView.findViewById(R.id.txt_title);
             txtDate = itemView.findViewById(R.id.txt_date);
-            itemView.setOnClickListener(v -> onItemClickListener.onClick(getAdapterPosition()));
-        itemView.setOnLongClickListener(v -> {onItemClickListener.longClick(getAdapterPosition());
+            itemView.setOnClickListener(v -> onItemClickListener.onClick(getAdapterPosition(),
+                    getItem(getAdapterPosition())));
+        itemView.setOnLongClickListener(v -> {onItemClickListener.longClick(getAdapterPosition(),
+                getItem(getAdapterPosition()));
         return true;});
         }
         public void bind(Note note){

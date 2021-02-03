@@ -17,6 +17,7 @@ import com.pharos.notea2pp.R;
 
 public class BoardAdapter extends RecyclerView.Adapter<BoardAdapter.ViewHolder> {
     private OnItemClickListener onItemClickListener;
+    private BoardFragmentListener boardFragmentListener;
 
     public BoardAdapter(){}
 
@@ -32,6 +33,7 @@ public class BoardAdapter extends RecyclerView.Adapter<BoardAdapter.ViewHolder> 
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         holder.bind(position);
     }
+
 
     @Override
     public int getItemCount() {
@@ -56,7 +58,7 @@ public class BoardAdapter extends RecyclerView.Adapter<BoardAdapter.ViewHolder> 
             btnStart = itemView.findViewById(R.id.btn_start);
             animationView = itemView.findViewById(R.id.lottie_layer_name);
 
-            btnStart.setOnClickListener(v -> onItemClickListener.onClick(getAdapterPosition()));
+            btnStart.setOnClickListener(v -> {boardFragmentListener.skip();});
         }
 
         public void bind(int position) {
@@ -67,5 +69,11 @@ public class BoardAdapter extends RecyclerView.Adapter<BoardAdapter.ViewHolder> 
             if (position == 2)
                 btnStart.setVisibility(View.VISIBLE);
         }
+    }
+    public void setBoardFragmentListener(BoardFragmentListener boardFragmentListener) {
+        this.boardFragmentListener = boardFragmentListener;
+    }
+    public interface BoardFragmentListener {
+        void skip();
     }
 }

@@ -11,6 +11,7 @@ import androidx.navigation.ui.NavigationUI;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
 import java.util.Objects;
@@ -18,6 +19,7 @@ import java.util.Objects;
 public class MainActivity extends AppCompatActivity {
     private NavController navController;
     private AppBarConfiguration appBarConfiguration;
+    FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,8 +28,7 @@ public class MainActivity extends AppCompatActivity {
         initNavController();
         if (!new Prefs(this).isShown()){
             navController.navigate(R.id.boardFragment);
-        }
-    else if (FirebaseAuth.getInstance().getCurrentUser() == null) {
+        } else if (FirebaseAuth.getInstance().getCurrentUser() == null) {
         navController.navigate(R.id.phoneFragment);
     }
     }

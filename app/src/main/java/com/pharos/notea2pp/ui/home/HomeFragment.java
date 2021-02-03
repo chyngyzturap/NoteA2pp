@@ -3,12 +3,14 @@ package com.pharos.notea2pp.ui.home;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -17,6 +19,13 @@ import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.pharos.notea2pp.App;
 import com.pharos.notea2pp.OnItemClickListener;
 import com.pharos.notea2pp.Prefs;
@@ -26,6 +35,7 @@ import com.pharos.notea2pp.model.Note;
 import java.util.List;
 
 public class HomeFragment extends Fragment {
+    private final FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     private RecyclerView recyclerView;
     private NoteAdapter adapter;
@@ -41,17 +51,16 @@ public class HomeFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        adapter = new NoteAdapter(getContext());
+        adapter = new NoteAdapter();
         setHasOptionsMenu(true);
-        loadData();
+        adapter.setList(loadData());
     }
-
 
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_home, container, false);
-        }
+    }
 
     @Override
     public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
@@ -61,14 +70,14 @@ public class HomeFragment extends Fragment {
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        if (item.getItemId()==R.id.sort_for_alf){
+        if (item.getItemId() == R.id.sort_for_alf) {
             adapter.sortList(App.getAppDataBase().noteDao().sortAll());
             return true;
-        } else if (item.getItemId() == R.id.sort_for_time){
+        } else if (item.getItemId() == R.id.sort_for_time) {
             adapter.sortList(App.getAppDataBase().noteDao().sortTime());
             return true;
         } else
-        return super.onOptionsItemSelected(item);
+            return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -83,36 +92,34 @@ public class HomeFragment extends Fragment {
         init();
     }
 
-    private void loadData() {
-        if (App.getAppDataBase().noteDao().getAll() != null){
-        list = App.getAppDataBase().noteDao().getAll();
-        adapter.setList(list);}
+    private List<Note> loadData() {
+        return list = App.getAppDataBase().noteDao().getAll();
     }
 
     private void init() {
         recyclerView.setAdapter(adapter);
         adapter.setOnItemClickListener(new OnItemClickListener() {
             @Override
-            public void onClick(int pos) {
+            public void onClick(int pos, Note note) {
                 updateApp = true;
                 position = pos;
-                Note note = adapter.getItem(pos);
+                adapter.getItem(pos);
                 openForm(note);
             }
 
             @Override
-            public void longClick(int pos) {
+            public void longClick(int pos, Note note) {
                 AlertDialog.Builder alert = new AlertDialog.Builder(getContext())
                         .setTitle("Вы уверены, что хотите удалить?")
                         .setMessage("Удалено")
                         .setPositiveButton("Да", (dialog, which) ->
                         {
-                            App.getAppDataBase().noteDao().delete(adapter.getItem(pos));
-                            App.getAppDataBase().noteDao().update(adapter.getItem(pos));
-                            adapter.remove(pos);
+                            adapter.removeItem(pos);
+                            deleteFromFireStore(note);
+                            App.getAppDataBase().noteDao().delete(note);
                         })
                         .setNegativeButton("Нет", null);
-                        alert.create().show();
+                alert.create().show();
             }
         });
     }
@@ -123,7 +130,7 @@ public class HomeFragment extends Fragment {
                 getViewLifecycleOwner(),
                 (requestKey, result) -> {
                     Note note = (Note) result.getSerializable("note");
-                    if (updateApp){
+                    if (updateApp) {
                         adapter.setItem(note, position);
                     } else {
                         adapter.addItem(note);
@@ -132,11 +139,23 @@ public class HomeFragment extends Fragment {
         );
     }
 
+    private void deleteFromFireStore(Note note) {
+        db.collection("notes").document(note.getId())
+                .delete()
+                .addOnSuccessListener(aVoid -> {
+                    Log.e("TAGF3", "Deleted, ID: " + note.getId());
+                    App.getAppDataBase().noteDao().update(note);
+                })
+                .addOnFailureListener(e ->
+                        Log.e("TAGF4", "Error with delete operation", e));
+    }
+
+
     private void openForm(Note note) {
         Bundle bundle = new Bundle();
         bundle.putSerializable("note", note);
         NavController navController = Navigation.findNavController(
                 requireActivity(), R.id.nav_host_fragment);
-        navController.navigate(R.id.form_fragment,bundle);
+        navController.navigate(R.id.form_fragment, bundle);
     }
 }
